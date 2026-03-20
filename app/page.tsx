@@ -2,6 +2,7 @@ import ImageBanner from "./components/ImageBanner";
 import NavBar from "./components/NavBar";
 import HomePageBody from "./components/home_page_body";
 import Footer from "./components/Footer";
+import InputForm from "./components/WhatIfSearchBar";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
         <NavBar />
         <ImageBanner />
         <HomePageBody />
+        <InputForm />
       </main>
       <Footer />
     </div>
