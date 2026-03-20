@@ -14,7 +14,7 @@ export default function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <nav className = "bg-black text-white">
+        <nav className = "text-white">
             <div className = "max-w-7xl mx-auto px-4">
                 <div className = "flex justify-between items-center h-16">
                     <div className = {`${cinzel.className} text-2xl tarcking-widest text-orange-300 font-bold`}>
