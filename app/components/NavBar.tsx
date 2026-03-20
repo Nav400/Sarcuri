@@ -38,8 +38,8 @@ export default function NavBar() {
 
             {isOpen && (
                 <div className="md:hidden px-4 pb-4 space-y-2 flex flex-col">
-                    <a href = "/" className = "text-orange-300 hover:text-gray-300">What-If</a>
-                    <a href = "/quiz" className = "text-orange-300 hover:text-gray-300">Quiz</a>
+                    <a href = "/" className = {`${cinzel.className} text-orange-300 hover:text-gray-300`}>What-If</a>
+                    <a href = "/quiz" className = {`${cinzel.className} text-orange-300 hover:text-gray-300`}>Quiz</a>
                 </div>
             )}
         </nav>
