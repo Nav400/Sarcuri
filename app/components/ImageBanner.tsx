@@ -14,8 +14,8 @@ const ImageBanner = () => {
         alt="Sarcuri Logo"
         className="w-full h-auto object-cover rounded-lg"
       />
-      <h2 className={`${cinzel.className} text-orange-300 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center p-4`}>
-        A curious mind exploring history's what-ifs
+      <h2 className={`${cinzel.className} text-orange-300 text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold text-center p-4`}>
+        Curious minds exploring history's what-ifs
       </h2>
     </div>
   );

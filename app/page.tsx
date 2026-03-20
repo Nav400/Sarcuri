@@ -6,7 +6,7 @@ import Footer from "./components/Footer";
 export default function Home() {
   return (
     <div>
-      <main className = "pb-30 ml-3 mr-3">
+      <main className = "pb-30 ml-2 mr-2">
         <NavBar />
         <ImageBanner />
         <HomePageBody />
