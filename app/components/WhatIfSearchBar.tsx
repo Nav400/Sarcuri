@@ -58,7 +58,7 @@ const InputForm = () => {
             )}
 
             {result && (
-                <div className={`${cinzel.className} mt-8 w-3/4 text-lg leading-relaxed whitespace-pre-wrap`}>
+                <div className={`${cinzel.className} mt-8 w-3/4 leading-relaxed text-lg leading-relaxed whitespace-pre-wrap`}>
                     {result}
                 </div>
             )}
