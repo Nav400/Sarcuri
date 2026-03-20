@@ -7,7 +7,7 @@ const cinzel = Cinzel({
 
 export default function Footer() {
     return (
-        <footer className={`${cinzel.className} bg-gray-600 text-white text-xl text-left p-8`}>
+        <footer className={`${cinzel.className} bg-gray-600 text-white text-base sm:text-small md:text-lg lg:text-xl text-left p-8`}>
             <a target = "_b;ank" href = "https://www.youtube.com/@sarcuri">
                 Youtube: @sarcuri
             </a>

@@ -7,7 +7,7 @@ const cinzel = Cinzel({
 
 export default function HomePageBody() {
     return (
-        <div className = {`${cinzel.className} leading-relaxed text-2xl space-y-6 mt-20 text-center`} style={{ wordSpacing: "2px" }}>
+        <div className = {`${cinzel.className} leading-relaxed text-base sm:text-small md:text-lg lg:text-2xl space-y-6 mt-20 text-center`} style={{ wordSpacing: "2px" }}>
             <p>
                 History never had to happen the way it did.
             </p>
