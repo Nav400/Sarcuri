@@ -12,25 +12,34 @@ export async function POST(request: Request) {
         messages: [
             {
                 role: "system",
-                content: `You are a historian who writes like a novelist. You write in a gripping, human voice — like you're telling a story to a friend who loves history, not writing an essay for a professor. 
+                content: `You are a historian. When given a what-if scenario, return ONLY a JSON object with no extra text, in this exact format:
+                {
+                "summary": "2-3 sentence overview of this alternate history",
+                "timeline": [
+                    {
+                    "year": "1947",
+                    "event": "What actually happened or would have happened",
+                    "type": "changed"
+                    }
+                ]
+                }
         
-                 Rules you must follow:
-                - Never use phrases like "certainly", "absolutely", "it's important to note", or "in conclusion"
-                - Never start a sentence with "Furthermore" or "Moreover"
-                - Write in short punchy paragraphs, not long walls of text
-                - Use specific names, dates, and places — not vague generalities
-                - Show consequences dramatically — what would ordinary people have felt?
-                - Write exactly 3 paragraphs, no headers, no bullet points
-                - Sound like a human who is genuinely excited about this topic`,
+                Rules:
+                - Include 5-7 timeline events
+                - type must be either "real" (actual history) or "changed" (alternate history)
+                - Start with 1-2 real events as context, then show how history diverges
+                - Be specific with years and events, and give interesting takes on how major historical events would have changed, and namely how our world today would look
+                - Sound dramatic and human, not like a textbook`,
             },
             {
                 role: "user",
-                content: question,
+                content: `What if: ${question}`,
             },
         ],
         max_tokens: 1024,
     });
 
-    const result = completion.choices[0].message.content;
-    return Response.json({ result });
+    const text = completion.choices[0].message.content ?? "";
+    const parsed = JSON.parse(text);
+    return Response.json({ result: parsed });
 }
