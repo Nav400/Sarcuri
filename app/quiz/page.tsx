@@ -9,8 +9,60 @@ const cinzel = Cinzel({
   weight: ["400", "700"],
 })
 
+interface Question { //interface is basically saying what QUestion should look like, like a blueprint
+    question: string;
+    options: string[];
+    answer: string;
+}
+
 interface Result {
-    quiz: string;
+    questions: Question[];
+}
+
+const QuizQuestion = ({ item, index, cinzelClass }: { //the variables inside the {} means destructuring of the parameters, and the lines under state what variable type each variable should be. Instead of writing interface QuizQuestionProps with the info underneath, i put it in one line.
+    //QuizQuestion must be outside QuizInputForm because each question is it's own useState, so if it was in the input form, the same useState would be shared for all questions.
+    item: Question;
+    index: number;
+    cinzelClass: string;
+}) => {
+    const [selected, setSelected] = useState<string | null>(null);
+
+    return (
+        <div className = "border border-gray-700 rounded-lg p-6 space-y-4">
+            <p className={`${cinzelClass} text-white text-lg font-bold`}> 
+                {index + 1}. {item.question}
+            </p>
+            <div className="space-y-2">
+                {item.options.map((option, i) => {
+                    let style = "border border-gray-600 text-gray-300 hover:border-gray-400";
+
+                    if (selected) {
+                        if (option === item.answer) {
+                            style = "border border-green-500 text-green-400 bg-green-900/20";
+                        } else if (option === selected && option !== item.answer) {
+                            style = "border border-red-500 text-red-400 bg-red-900/20";
+                        } else {
+                            style = "border border-gray-700 text-gray-500";
+                        }
+                    }
+                    return (
+                        <button 
+                        key = {i}
+                        disabled = {!!selected} //Use !! because it converts null to false (so the initial state of all button answers is false)
+                        onClick = {() => setSelected(option)}
+                        className = {`${cinzelClass} w-full text-left px-4 py-2 rounded-lg transition-colors ${style}`}>
+                            {option}
+                        </button>
+                    );
+                })}
+            </div>
+            {selected && (
+                <p className={`${cinzelClass} text-sm mt-2 ${selected === item.answer ? "text-green-400" : "text-red-400"}`}>
+                    {selected === item.answer ? "Correct!" : `Wrong — the answer was ${item.answer}`}
+                </p>
+            )}
+        </div>
+    )
 }
 //Sets all the states I will need to keep track of repsonse loading of the value inputted
 const QuizInputForm = () => {
@@ -87,10 +139,15 @@ const QuizInputForm = () => {
             )}
 
             {result && (
-                <div className="mt-8 w-full max-w-xl">
-                    <p className={`${cinzel.className} text-lg leading-relaxed whitespace-pre-wrap text-gray-300`}>
-                        {result.quiz}
-                    </p>
+                <div className="mt-8 w-full max-w-xl space-y-6">
+                    {result.questions.map((item, index) => (
+                        <QuizQuestion
+                            key={index}
+                            index={index}
+                            item={item}
+                            cinzelClass={cinzel.className}
+                        />
+                    ))}
                 </div>
             )}
         </div>

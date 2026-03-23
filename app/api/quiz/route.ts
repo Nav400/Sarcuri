@@ -14,29 +14,34 @@ export async function POST(request: Request) { //handles the POST request (when 
         messages: [
             {
                 role: "system",
-                content: `You are an AI quiz generator. When given a topic, return ONLY a JSON object with this exact format:
-
+                content: `You are an AI quiz generator. When given a topic, return ONLY a raw JSON object, no markdown, no backticks, no extra text, in this exact format:
                 {
-                "quiz": "1. Question one? A) option1 B) option2 C) option3 D) option4 | 2. Question two? A) option1 B) option2 C) option3 D) option4"
+                  "questions": [
+                    {
+                      "question": "Question text here?",
+                      "options": ["A) option1", "B) option2", "C) option3", "D) option4"],
+                      "answer": "A) option1",
+                      "explanation": explain why the answer is correct
+                    }
+                  ]
                 }
-
                 Rules:
-                - Generate 10 multiple choice questions
-                - Separate each question with a pipe character |
-                - Put all questions in one single line string, no line breaks, no newlines
-                - Output valid JSON only, one key: quiz`,
+                - Generate exactly 10 questions
+                - Each question has exactly 4 options
+                - answer must exactly match one of the options
+                - No newlines or line breaks inside any string values
+                - Raw JSON only, nothing else`,
             },
             {
                 role: "user",
                 content: `Quiz: ${question}`,
             },
         ],
-        max_tokens: 1024,
+        max_tokens: 2048,
     });
 
     const text = completion.choices[0].message.content ?? ""; //goes through the array of choices (should only be one element), and returns the message content... if there is no content, the ?? signal a fallback to an empty string.
-    //const parsed = JSON.parse(text); JSON.parse(text) turns the JSON string into a real JavaScript object, instead of just keys and values. Thus, it's easier to access data (like with the what-if situation, i can do result.timeline to access the data because it was converted into a Javascript object)
-    const cleaned = text.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const cleaned = text.replace(/```json|```/g, "").trim(); //cleans up the text that is returned, replaces all instances/globally (g) of the "json" text with "", and trims it
+    const parsed = JSON.parse(cleaned); //JSON.parse(text) turns the JSON string into a real JavaScript object, instead of just keys and values. Thus, it's easier to access data (like with the what-if situation, i can do result.timeline to access the data because it was converted into a Javascript object)
     return Response.json({ result: parsed}); //{ result: parsed } wraps the whole parsed variable (the object of the AI response) with a result key, so i can access the data by doing data.result. Response.json just converts it into a JSON string.
 }
