@@ -38,7 +38,7 @@ const QuizInputForm = () => {
         setError('');
         //API call
         try {
-            const response = await fetch('/api/what-if', { //await is telling the program to wait for the response
+            const response = await fetch('/api/quiz', { //await is telling the program to wait for the response
                 method: 'POST', //POST is an HTTP method that means we are sending data to the server 
                 headers: { 'Content-type': 'application/json'}, //headers are like the label about what we're sending... telling the server we're sending a json
                 body: JSON.stringify({question: inputValue}) //turns what we're sending into a JSON, and is formatting it such that we have "question: [whatever the question was]"
@@ -87,8 +87,8 @@ const QuizInputForm = () => {
             )}
 
             {result && (
-                <div className = "mt-8 w-full max-w-xl">
-                    <p className={`${cinzel.className} text-lg leading-relaxed mb-10 text-gray-300`}>
+                <div className="mt-8 w-full max-w-xl">
+                    <p className={`${cinzel.className} text-lg leading-relaxed whitespace-pre-wrap text-gray-300`}>
                         {result.quiz}
                     </p>
                 </div>
