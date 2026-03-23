@@ -24,9 +24,16 @@ const InputForm = () => {
     const [result, setResult] = useState<Result | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isReady, setIsReady] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value);
+        const value = e.target.value;
+        setInputValue(value);
+        if (value.trim() == "") {
+            setIsReady(false);
+        } else {
+            setIsReady(true);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -65,8 +72,9 @@ const InputForm = () => {
                     className={`${cinzel.className} w-full sm:flex-1 px-3 py-2 sm:py-2 border-b-2 border-gray-300 text-base sm:text-xl focus:outline-none focus:border-blue-500 placeholder-gray-400`}
                 />
                 <button
+                    disabled = {!isReady}
                     type="submit"
-                    className={`${cinzel.className} mt-2 sm:mt-0 px-4 py-2 bg-orange-300 text-black text-base sm:text-lg font-bold rounded-lg hover:bg-orange-800 focus:outline-none`}
+                    className={`${cinzel.className} ${!isReady ? "opacity-50 cursor-not-allowed" : ""} mt-2 sm:mt-0 px-4 py-2 bg-orange-300 text-black text-base sm:text-lg font-bold rounded-lg hover:bg-orange-800 focus:outline-none`}
                 >
                     {loading ? "Exploring..." : "Explore"}
                 </button>
