@@ -9,6 +9,9 @@ const cinzel = Cinzel({
   weight: ["400", "700"],
 })
 
+let numCorrect = 0;
+let numAnswered = 0;
+
 interface Question { //interface is basically saying what QUestion should look like, like a blueprint
     question: string;
     options: string[];
@@ -39,11 +42,13 @@ const QuizQuestion = ({ item, index, cinzelClass }: { //the variables inside the
                     if (selected) {
                         if (option === item.answer) {
                             style = "border border-green-500 text-green-400 bg-green-900/20";
+                            numCorrect = numCorrect + 1;
                         } else if (option === selected && option !== item.answer) {
                             style = "border border-red-500 text-red-400 bg-red-900/20";
                         } else {
                             style = "border border-gray-700 text-gray-500";
                         }
+                        numAnswered = numAnswered + 1;
                     }
                     return (
                         <button 
@@ -59,7 +64,9 @@ const QuizQuestion = ({ item, index, cinzelClass }: { //the variables inside the
             {selected && (
                 <p className={`${cinzelClass} text-sm mt-2 ${selected === item.answer ? "text-green-400" : "text-red-400"}`}>
                     {selected === item.answer ? "Correct!" : `Wrong — the answer was ${item.answer}`}
+                    {selected === item.answer ? numCorrect + 1 : numCorrect + 0}
                 </p>
+
             )}
         </div>
     )
@@ -88,6 +95,8 @@ const QuizInputForm = () => {
         setLoading(true);
         setResult(null);
         setError('');
+        numCorrect = 0;
+        numAnswered = 0;
         //API call
         try {
             const response = await fetch('/api/quiz', { //await is telling the program to wait for the response
