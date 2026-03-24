@@ -9,8 +9,6 @@ const cinzel = Cinzel({
   weight: ["400", "700"],
 })
 
-let numCorrect = 0;
-let numAnswered = 0;
 
 interface Question { //interface is basically saying what QUestion should look like, like a blueprint
     question: string;
@@ -22,13 +20,18 @@ interface Result {
     questions: Question[];
 }
 
-const QuizQuestion = ({ item, index, cinzelClass }: { //the variables inside the {} means destructuring of the parameters, and the lines under state what variable type each variable should be. Instead of writing interface QuizQuestionProps with the info underneath, i put it in one line.
+
+//Parents (QuizInputForm) can pass data to the child (QuizQuestion), but the child can't pass data to the parent. This is why we need to create a whole new system for keeping track if all questions are answered... because QuizQuestion can't pass that to QuizInputForm.
+
+const QuizQuestion = ({ item, index, cinzelClass, selected, onSelect }: { //the variables inside the {} means destructuring of the parameters, and the lines under state what variable type each variable should be. Instead of writing interface QuizQuestionProps with the info underneath, i put it in one line.
     //QuizQuestion must be outside QuizInputForm because each question is it's own useState, so if it was in the input form, the same useState would be shared for all questions.
     item: Question;
     index: number;
     cinzelClass: string;
+    selected: string | null;
+    onSelect: (option: string) => void; //updates the state of the parent, buut doesn't return anything
 }) => {
-    const [selected, setSelected] = useState<string | null>(null);
+
 
     return (
         <div className = "border border-gray-700 rounded-lg p-6 space-y-4">
@@ -42,19 +45,17 @@ const QuizQuestion = ({ item, index, cinzelClass }: { //the variables inside the
                     if (selected) {
                         if (option === item.answer) {
                             style = "border border-green-500 text-green-400 bg-green-900/20";
-                            numCorrect = numCorrect + 1;
                         } else if (option === selected && option !== item.answer) {
                             style = "border border-red-500 text-red-400 bg-red-900/20";
                         } else {
                             style = "border border-gray-700 text-gray-500";
                         }
-                        numAnswered = numAnswered + 1;
                     }
                     return (
                         <button 
                         key = {i}
                         disabled = {!!selected} //Use !! because it converts null to false (so the initial state of all button answers is false)
-                        onClick = {() => setSelected(option)}
+                        onClick={() => onSelect(option)}
                         className = {`${cinzelClass} w-full text-left px-4 py-2 rounded-lg transition-colors ${style}`}>
                             {option}
                         </button>
@@ -64,7 +65,6 @@ const QuizQuestion = ({ item, index, cinzelClass }: { //the variables inside the
             {selected && (
                 <p className={`${cinzelClass} text-sm mt-2 ${selected === item.answer ? "text-green-400" : "text-red-400"}`}>
                     {selected === item.answer ? "Correct!" : `Wrong — the answer was ${item.answer}`}
-                    {selected === item.answer ? numCorrect + 1 : numCorrect + 0}
                 </p>
 
             )}
@@ -78,6 +78,7 @@ const QuizInputForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [isReady, setIsReady] = useState(false);
+    const [answers, setAnswers] = useState<(string | null)[]>([]); //tracks the user's answers outside the QuizQuestion component so that the parent knows when all questions are answered.
 
     //Handler function for when something is typed into the input field
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { //"e" is the parameter, "React.ChangeEven" is the type
@@ -95,11 +96,11 @@ const QuizInputForm = () => {
         setLoading(true);
         setResult(null);
         setError('');
-        numCorrect = 0;
-        numAnswered = 0;
+
         //API call
+        let response;
         try {
-            const response = await fetch('/api/quiz', { //await is telling the program to wait for the response
+            response = await fetch('/api/quiz', { //await is telling the program to wait for the response
                 method: 'POST', //POST is an HTTP method that means we are sending data to the server 
                 headers: { 'Content-type': 'application/json'}, //headers are like the label about what we're sending... telling the server we're sending a json
                 body: JSON.stringify({question: inputValue}) //turns what we're sending into a JSON, and is formatting it such that we have "question: [whatever the question was]"
@@ -107,12 +108,16 @@ const QuizInputForm = () => {
 
             const data = await response.json()
             setResult(data.result) //the API result comes has a key called result, and we're fetching the data associated with that
+            setAnswers(new Array(data.result.questions.length).fill(null));
+
         } catch (err) {
             setError('Something went wrong. Please try again.')
         } finally {
             setLoading(false);
         }
+        
     };
+    const allAnswered = answers.length > 0 && answers.every(a => a !== null); //checks if the array is full, and when it is, it will fire the pop up window for the score.
 
     return (
         <div className = "flex flex-col items-center mt-20 px-4">
@@ -155,8 +160,36 @@ const QuizInputForm = () => {
                             index={index}
                             item={item}
                             cinzelClass={cinzel.className}
+                            selected = {answers[index]} //the user's answer is assigned to the "selected" prop.
+                            onSelect={(option) => { //function that is passed down. it's job is to update answers when the user clicks an option
+                                const updated = [...answers]; //makes a copy of the answers array
+                                updated[index] = option; //updates the option
+                                setAnswers(updated); //reassigns the answers array
+                            }}
                         />
                     ))}
+                </div>
+            )}
+
+            {allAnswered && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                    <div className="bg-gray-900 border border-gray-700 rounded-lg p-8 max-w-sm w-full text-center space-y-4">
+            
+                        <h2 className={`${cinzel.className} text-orange-300 text-3xl font-bold`}>
+                            Quiz Complete!
+                        </h2>
+                        
+                        <p className={`${cinzel.className} text-white text-xl`}>
+                            You scored {answers.filter((a, i) => a === result!.questions[i].answer).length} / {result!.questions.length}
+                        </p>
+                        {/*answers.filter is like map, but in this case it doesn't change anything. filter goes through and sees which answers from the user are the same as the answers in the array of correct answers. then divides it by the amount of questions total*/}
+                        <button
+                            onClick={() => { setResult(null); setAnswers([]); }}
+                            className={`${cinzel.className} mt-4 px-6 py-2 bg-orange-300 text-black font-bold rounded-lg hover:bg-orange-400`}
+                        >
+                            Try Another Quiz
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
