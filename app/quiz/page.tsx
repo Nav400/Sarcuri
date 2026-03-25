@@ -3,6 +3,7 @@
 import NavBar from "../components/NavBar";
 import { Cinzel } from "next/font/google";
 import { useState } from 'react';
+import Footer from "../components/Footer"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -217,6 +218,11 @@ export default function Quiz() {
                 
             </div>
             <QuizInputForm />
+            <div className = "mt-30">
+
+            </div>
+            <Footer />
         </main>
+        
     );
 };
