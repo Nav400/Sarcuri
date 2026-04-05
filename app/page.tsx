@@ -6,7 +6,7 @@ import InputForm from "./components/WhatIfSearchBar";
 
 export default function Home() {
   return (
-    <div>
+    <div className = "bg-black">
       <main className = "pb-30 ml-2 mr-2">
         <NavBar />
         <ImageBanner />
